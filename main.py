@@ -37,7 +37,7 @@ class Ecg:
         self.outpath = str(self.outdir + "/" + self.fname + self.target_ext)
 
     def convert_args(self):
-        args = ['ECGTool', self.path, self.target_format, self.outpath]
+        args = ['./lib/ECGTool', self.path, self.target_format, self.outpath]
         return args
 
 class Ecg_xml(Ecg):
