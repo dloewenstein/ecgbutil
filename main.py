@@ -1,5 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+import tkinter.messagebox as msg
 import tkinter.filedialog
 import os
 import shutil
@@ -102,6 +103,7 @@ def convert_ecg(in_dir, out_dir, file, target_form):
     """Convert ecg and return (n) success or fail"""
     ecg = Ecg(in_dir, file)
     if ecg.check_ext() is False:
+        print("Skipping {} , wrong extension.".format(file))
         return
     ecg.set_target_format(target_form)
     ecg.set_outdir(out_dir)
@@ -125,8 +127,18 @@ def anonymize_ecg(dir, file):
     ano_info = ecg.get_ano_info()
     return ano_info
 
+def listfiles(path):
+    for file in os.listdir(path):
+        if os.path.isfile(os.path.join(path, file)):
+            yield file
+
 def convert_files(in_dir, out_dir, target_form, anonymize, progbar):
-    files = os.listdir(in_dir)
+    files = listfiles(in_dir)
+    n_proc_files = 0
+    if sum(1 for _ in files) == 0:
+        msg.showinfo("Info", "Couldn't find any files to convert\nCurrently doesn't support searching subfolders.")
+        return
+
     progbar["value"] = 0
     prog_step = float(100.0/len(files))
     if anonymize:
@@ -141,7 +153,7 @@ def convert_files(in_dir, out_dir, target_form, anonymize, progbar):
             progbar["value"] += prog_step
             progbar.update()
 
-        temp_files = os.listdir(temp_path)
+        temp_files = listfiles(temp_path)
 
         for file in temp_files:
             ano_info = anonymize_ecg(temp_path, file)
@@ -151,6 +163,7 @@ def convert_files(in_dir, out_dir, target_form, anonymize, progbar):
 
         for file in temp_files:
             convert_ecg(temp_path, out_dir, file, target_form)
+            n_proc_files += 1
             progbar["value"] += prog_step
             progbar.update()
 
@@ -162,8 +175,11 @@ def convert_files(in_dir, out_dir, target_form, anonymize, progbar):
     else:
         for file in files:
             convert_ecg(in_dir, out_dir, file, target_form)
+            n_proc_files +=1
             progbar["value"] += prog_step
             progbar.update()
+
+    msg.showinfo("Result", "Processed {} files".format(n_proc_files))
 
 class App(ttk.Frame):
     def __init__(self, master=None):
@@ -214,7 +230,22 @@ class App(ttk.Frame):
         var.set(dir)
         print(var.get())
 
+    def assert_input(self):
+        if (self.in_dir.get() == ""):
+            msg.showwarning("Warning", "No input folder choosen. Aborts...")
+            return 1
+        return 0
+
+    def asser_output(self):
+        if (self.out_dir.get() == ""):
+            msg.showwarning("Warning", "No output folder choosen. Aborts...")
+
+
     def convert(self):
+        if (self.assert_input()):
+            return
+        if (self.asser_output()):
+            return
         popup = tk.Tk()
         progressbar = ttk.Progressbar(popup, length = 100, mode = "determinate")
         progressbar.pack(fill = "x")
@@ -238,8 +269,8 @@ in_opts = [".dcm",
            ".scp",
            ".ecg"]
 
-root = tk.Tk()
+root  = tk.Tk()
 style = ttk.Style()
 style.theme_use("clam")
-app  = App(master = root)
+app   = App(master = root)
 app.mainloop()
