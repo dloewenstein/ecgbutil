@@ -152,13 +152,14 @@ def convert_files(in_dir, out_dir, target_form, anonymize, progbar):
     """Orchestrate main functions"""
     files = listfiles(in_dir)
     n_proc_files = 0
-    if sum(1 for _ in files) == 0:
+    n_files      = sum(1 for _ in files)
+    if n_files == 0:
         msg.showinfo("Info", "Couldn't find any files to convert\nCurrently doesn't support searching subfolders.")
         return
 
     # Progressbar setup
     progbar["value"] = 0
-    prog_step = float(100.0/len(files))
+    prog_step = float(100.0/n_files)
 
     if anonymize:
         # Setup record for identifiers
