@@ -217,16 +217,15 @@ class App(ttk.Frame):
         self.pack()
 
         # Store input path
-        self.in_dir  = tk.StringVar()
+        self.in_dir  = tk.StringVar(self)
 
         # Store output path
-        self.out_dir = tk.StringVar()
+        self.out_dir = tk.StringVar(self)
 
         # Store output format
-        self.target_format = tk.StringVar()
-        self.target_format.set(out_opts[2])
+        self.target_format = tk.StringVar(self)
 
-        self.anonymize = tk.BooleanVar()
+        self.anonymize = tk.BooleanVar(self)
         self.create_widgets()
 
 
@@ -255,7 +254,19 @@ class App(ttk.Frame):
         self.opt_label = ttk.Label(self)
         self.opt_label["text"] = "Target format:"
         self.opt_label.pack(fill="x")
-        self.opt_list = ttk.OptionMenu(self, self.target_format, *out_opts)
+        # Don't add spaces or reformat out_opts list
+        # will break subsetting downstream
+        self.out_opts = ["MUSE-XML .xml",
+                         "DICOM .dcm",
+                         "ISHNE .ecg",
+                         "SCP-ECG .scp",
+                         "aECG .xml",
+                         "CSV .csv"]
+
+        self.opt_list = ttk.OptionMenu(self,
+                                       self.target_format, # Storage variable
+                                       "MUSE-XML .xml",    # Start value
+                                       *self.out_opts)     # Options
         self.opt_list.pack(fill="x")
 
         # Main function conversion button
@@ -301,24 +312,15 @@ class App(ttk.Frame):
         progressbar.pack(fill = "x")
         label = ttk.Label(popup, text = "Converting files ...")
         label.pack(fill = "x")
-        targ_opt, targ_ext = self.target_format.get().split("'")[1::2]
-        convert_files(self.in_dir.get(), self.out_dir.get(), (targ_opt, targ_ext), self.anonymize.get(), progressbar)
+        target_format = self.target_format.get().split(" ")
+        convert_files(self.in_dir.get(),    # set input directory
+                      self.out_dir.get(),   # set output directory
+                      target_format,        # provide choosen format
+                      self.anonymize.get(), # anonymiz bool
+                      progressbar)          # provide progressbar
+        # kill progressbar window when done
         popup.destroy()
         
-
-# Output format options
-out_opts = [("DICOM",    ".dcm"),
-            ("ISHNE",    ".ecg"),
-            ("MUSE-XML", ".xml"),
-            ("SCP-ECG",  ".scp"),
-            ("aECG",     ".xml"),
-            ("CSV",      ".csv")]
-
-# Supported input file extensions
-in_opts = [".dcm",
-           ".xml",
-           ".scp",
-           ".ecg"]
 
 root  = tk.Tk()
 style = ttk.Style()
