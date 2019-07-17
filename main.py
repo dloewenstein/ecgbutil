@@ -282,16 +282,18 @@ class App(ttk.Frame):
             return 1
         return 0
 
-    def asser_output(self):
+    def assert_output(self):
         """Assert that output folder is choosen"""
         if (self.out_dir.get() == ""):
             msg.showwarning("Warning", "No output folder choosen. Aborts...")
+            return 1
+        return 0
 
 
     def convert(self):
         if (self.assert_input()):
             return
-        if (self.asser_output()):
+        if (self.assert_output()):
             return
         popup = tk.Tk()
         progressbar = ttk.Progressbar(popup, length = 100, mode = "determinate")
