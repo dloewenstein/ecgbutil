@@ -2,7 +2,7 @@
 title: ECGButil
 subtitle: ECG conversion and anonymization Batch utility
 author: Daniel Loewenstein
-version: 0.2.0
+version: 0.2.1
 ---
 
 ECGButil
