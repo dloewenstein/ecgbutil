@@ -16,6 +16,7 @@ class Ecg:
     def __init__(self, dir, file):
         self.path   = str(dir + "/" + file)
         self.fname, self.ext = self.get_fname_fext(file)
+        self.ext = self.ext.lower()
 
     def get_fname_fext(self, file):
         """Get the filename, extension"""
