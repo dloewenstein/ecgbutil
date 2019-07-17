@@ -272,5 +272,8 @@ in_opts = [".dcm",
 root  = tk.Tk()
 style = ttk.Style()
 style.theme_use("clam")
+root.wm_geometry("220x190")
+root.iconbitmap("ecgbutil.ico")
+root.title("ECGButil")
 app   = App(master = root)
 app.mainloop()
