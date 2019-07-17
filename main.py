@@ -143,23 +143,24 @@ def anonymize_ecg(dir, file):
     return ano_info
 
 def listfiles(path):
-    """List files generator function"""
+    """List files in directory"""
+    files = []
     for file in os.listdir(path):
         if os.path.isfile(os.path.join(path, file)):
-            yield file
+            files.append(file)
+    return files
 
 def convert_files(in_dir, out_dir, target_form, anonymize, progbar):
     """Orchestrate main functions"""
     files = listfiles(in_dir)
     n_proc_files = 0
-    n_files      = sum(1 for _ in files)
-    if n_files == 0:
+    if len(files) == 0:
         msg.showinfo("Info", "Couldn't find any files to convert\nCurrently doesn't support searching subfolders.")
         return
 
     # Progressbar setup
     progbar["value"] = 0
-    prog_step = float(100.0/n_files)
+    prog_step = float(100.0/len(files))
 
     if anonymize:
         # Setup record for identifiers
