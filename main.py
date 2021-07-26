@@ -262,7 +262,8 @@ class App(ttk.Frame):
                          "ISHNE .ecg",
                          "SCP-ECG .scp",
                          "aECG .xml",
-                         "CSV .csv"]
+                         "CSV .csv",
+                         "PDF .pdf"]
 
         self.opt_list = ttk.OptionMenu(self,
                                        self.target_format, # Storage variable
